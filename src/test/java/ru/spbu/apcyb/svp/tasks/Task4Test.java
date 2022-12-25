@@ -64,13 +64,16 @@ class Task4Test {
   }
 
   /**
-   * Считывает строку из multiThreadTest, разбивает ее на числа. и ищет их в singleThreadTest(т.к
-   * его уже проверили) если нашел, то checkedAmount++
+   * 1) Сначала генерируем случайные числа и проводим вычисления в однопотоке. 2) Заносим числа из
+   * однопоточного файла в List expected. 3) Проводим многопоточное вычисление. 4) Проверяем
+   * вхождение чисел из многопоточного файла в List expected.
    */
   @Test
   void multiThreadTest() throws IOException {
+    //Генерируем числа
     int numbers = 100;
     Task4.generateNumbers(numbers);
+    //Однопоток
     FileWriter outSingle = new FileWriter(OUT_SINGLE, false);
     Task4.singleThread(INPUT, outSingle, numbers);
     BufferedReader readerSingle = new BufferedReader(new FileReader(OUT_SINGLE));
@@ -78,9 +81,11 @@ class Task4Test {
     for (int i = 0; i < numbers; i++) {
       expected.add(readerSingle.readLine());
     }
+    //Многопоток
     FileWriter writerMulti = new FileWriter(OUT_MULTI, false);
     Task4.multiThread(INPUT, writerMulti, 100, 10);
     writerMulti.close();
+    //Проверка
     int seen = 0;
     int checked = 0;
     try (BufferedReader readerMulti = new BufferedReader(new FileReader(OUT_MULTI))) {
